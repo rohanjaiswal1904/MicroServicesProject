@@ -1,0 +1,69 @@
+server:
+  port: 8081
+  
+spring:
+  application:
+    name: USER-SERVICE
+  datasource:
+    url: jdbc:mysql://localhost:3306/usermicrodb
+    username: root
+    password: root    
+  jpa:
+    hibernate:
+      ddl-auto: update
+      show-sql: true
+#    fetch common config from config server
+  config:
+    import: configserver:http://localhost:8085
+    #also write optional in value
+# spring.config.import = optional:configserver:http://localhost:8085
+# also activate the profile using config server
+#  profiles:
+#    active: prod
+
+# fetch this config from config server
+#eureka:
+#  instance:
+##  agar hostname decalare kr diya hai to server k ip address ka use karega
+#    prefer-ip-address: true
+#  client:
+#    service-url:
+#      defaulzone:  http://localhost:8761/eureka
+##   yeh dono properties by defaut bhi true hi rehti hai
+#    fetch-registry: true
+#    register-with-eureka: true
+
+#enable actuator endpoint and circuit breaker
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include: health
+
+  endpoint:
+    health:
+      show-details: always
+
+
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      ratingHotelBreaker:
+        registerHealthIndicator: true
+        eventConsumerBufferSize: 10
+        failureRateThreshold: 50
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        waitDurationInOpenState: 6s
+        permittedNumberOfCallsInHalfOpenState: 3
+        slidingWindowSize: 10
+        slidingWindowType: COUNT_BASED
+     
+#spring:
+#  h2:
+#    console:
+#      enabled: true

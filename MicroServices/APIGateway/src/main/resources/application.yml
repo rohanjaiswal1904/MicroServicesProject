@@ -1,0 +1,35 @@
+server:
+  port: 8084
+  
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+      - id: USER-SERVICE
+        uri: lb://USER-SERVICE
+        predicates:
+        - Path=/users/**
+        
+      - id: HOTEL-SERVICE
+        uri: lb://HOTEL-SERVICE
+        predicates:
+        - Path=/hotels/**,/staffs/**
+        
+      - id: RATING-SERVICE
+# because we use service registry thats why we use load balancing lb:/service-name
+        uri: lb://RATING-SERVICE
+        predicates:
+        - Path=/ratings/**
+eureka:
+  instance:
+#  agar hostname decalare kr diya hai to server k ip address ka use karega
+    prefer-ip-address: true
+  client:
+    service-url:
+      defaulzone:  http://localhost:8761/eureka
+#   yeh dono properties by defaut bhi true hi rehti hai
+    fetch-registry: true
+    register-with-eureka: true
+   
